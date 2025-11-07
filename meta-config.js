@@ -6,7 +6,7 @@
 const CONFIG_PAGES = [
     {
         "key": "FACEBOOK 1",
-        "name": "Name 1",
+        "name": "Ciakk Cia",
         "pixelId": "1875036436680690",
         "domainVerification": "irbitds8t5nogsmssbgdfmjrila3oh",
         "eventTracking": []
