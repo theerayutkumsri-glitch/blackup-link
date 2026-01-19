@@ -2,9 +2,9 @@
   "CONFIG_PAGES": [
     {
       "key": "FACEBOOK 1",
-      "name": "Ciakk Cia",
-      "pixelId": "ก",
-      "domainVerification": "ก",
+      "name": "Name 1",
+      "pixelId": "testewr",
+      "domainVerification": "testewr",
       "eventTracking": []
     },
     {
