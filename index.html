@@ -73,7 +73,7 @@
         const GITHUB_USERNAME = "theerayutkumsri-glitch";
         const GITHUB_REPO = "blackup-link";
         const GITHUB_CONFIG_FILE = "config.json";
-        const GITHUB_TOKEN_STORAGE_KEY = "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";
+        const GITHUB_TOKEN_STORAGE_KEY = "githubToken";
 
         // ตรวจสอบรหัสผ่าน
         function authenticate() {
@@ -160,9 +160,11 @@
                     sha = fileData.sha;
                 } else if (getResponse.status === 404) {
                     // ไฟล์ยังไม่มี จะสร้างใหม่
+                    console.log('File does not exist yet, creating new file...');
                     sha = null;
                 } else {
-                    throw new Error(`Failed to fetch file info: ${getResponse.status}`);
+                    const errorData = await getResponse.json();
+                    throw new Error(errorData.message || `Failed to fetch file info: ${getResponse.status}`);
                 }
                 
                 // 3. อัพโหลดหรือสร้างไฟล์
