@@ -12,7 +12,7 @@ let CONFIG_PAGES = [];
 async function loadConfig() {
     try {
         // Replace with your GitHub username and repo
-        const configUrl = 'https://raw.githubusercontent.com/YOUR_USERNAME/blackup-link/main/config.json?v=' + new Date().getTime();
+        const configUrl = 'https://raw.githubusercontent.com/theerayutkumsri-glitch/blackup-link/main/config.json?v=' + new Date().getTime();
         const response = await fetch(configUrl);
         
         if (!response.ok) {
