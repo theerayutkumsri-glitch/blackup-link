@@ -1,25 +1,143 @@
 {
-  "pages": [
+  "CONFIG_PAGES": [
     {
-      "key": "page1",
-      "name": "เว็บหลัก",
-      "pixelId": "906803681684641",
-      "domainVerification": "y0w3wdlfmswcvmvjb4ts060brtloyq",
-      "eventTracking": [
-        {
-          "id": "main-line-button",
-          "events": [
-            {"name": "Contact"},
-            {"name": "AddToCart", "params": {"value": 100, "currency": "THB"}}
-          ]
-        }
-      ]
+      "key": "FACEBOOK 1",
+      "name": "Ciakk Cia",
+      "pixelId": "ก",
+      "domainVerification": "ก",
+      "eventTracking": []
     },
     {
-      "key": "page2",
-      "name": "แคมเปญโปรโมชั่น 1",
-      "pixelId": "123456789012345",
-      "domainVerification": "abcde12345fghij67890klmno2345",
+      "key": "FACEBOOK 2",
+      "name": "Name 2",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 3",
+      "name": "Name 3",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 4",
+      "name": "Name 4",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 5",
+      "name": "Name 5",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 6",
+      "name": "Name 6",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 7",
+      "name": "Name 7",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 8",
+      "name": "Name 8",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 9",
+      "name": "Name 9",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 10",
+      "name": "Name 10",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 11",
+      "name": "Name 11",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 12",
+      "name": "Name 12",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 13",
+      "name": "Name 13",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 14",
+      "name": "Name 14",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 15",
+      "name": "Name 15",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 16",
+      "name": "Name 16",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 17",
+      "name": "Name 17",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 18",
+      "name": "Name 18",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 19",
+      "name": "Name 19",
+      "pixelId": "",
+      "domainVerification": "",
+      "eventTracking": []
+    },
+    {
+      "key": "FACEBOOK 20",
+      "name": "Name 20",
+      "pixelId": "",
+      "domainVerification": "",
       "eventTracking": []
     }
   ]

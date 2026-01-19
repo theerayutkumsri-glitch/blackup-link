@@ -1,54 +1,82 @@
 /**
- * Global Configuration for Meta Pixel, Domain Verification, and Event Tracking.
- * Config is loaded dynamically from config.json on GitHub
- * Support URL parameters: ?key=page1 or ?name=xxx&pixel=xxx&dom=xxx
+ * Global Configuration for Meta Pixel, Domain Verification, and Event Tracking (20 Pages).
+ * CONFIG_PAGES is loaded from config.json on GitHub (cached with v parameter).
+ * Supports URL parameters: ?name=PageName&pixel=PixelID&dom=DomainVerification
  */
-
-// GitHub Raw URL - Update YOUR_USERNAME with your GitHub username
-const CONFIG_URL = 'https://raw.githubusercontent.com/theerayutkumsri-glitch/blackup-link/main/config.json';
 
 let CONFIG_PAGES = [];
 
-// Load config from GitHub
-async function loadConfigFromGitHub() {
+/**
+ * Fetch config from GitHub with cache busting
+ */
+async function loadConfig() {
     try {
-        // เพิ่ม cache buster เพื่อลบ cache
-        const url = CONFIG_URL + '?t=' + new Date().getTime();
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        // Replace with your GitHub username and repo
+        const configUrl = 'https://raw.githubusercontent.com/YOUR_USERNAME/blackup-link/main/config.json?v=' + new Date().getTime();
+        const response = await fetch(configUrl);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to load config: ${response.status}`);
+        }
+        
         const data = await response.json();
-        CONFIG_PAGES = data.pages || [];
-        console.log('Config loaded successfully:', CONFIG_PAGES.length, 'pages');
-        return true;
+        CONFIG_PAGES = data.CONFIG_PAGES || [];
+        
+        console.log('Config loaded successfully from GitHub');
+        applyURLParameters();
+        injectMetaTags();
     } catch (error) {
-        console.error('Failed to load config from GitHub:', error);
-        return false;
+        console.error('Error loading config:', error);
+        console.warn('Falling back to inline config...');
+        injectMetaTags();
+    }
+}
+
+/**
+ * Parse URL parameters and override CONFIG_PAGES if provided
+ * Supported parameters: ?name=PageName&pixel=PixelID&dom=DomainVerification
+ */
+function applyURLParameters() {
+    const params = new URLSearchParams(window.location.search);
+    const nameParam = params.get('name');
+    const pixelParam = params.get('pixel');
+    const domParam = params.get('dom');
+    
+    // If URL parameters are provided, override the first config entry
+    if (nameParam || pixelParam || domParam) {
+        if (CONFIG_PAGES.length === 0) {
+            CONFIG_PAGES.push({
+                "key": "CUSTOM",
+                "name": nameParam || "Custom Page",
+                "pixelId": pixelParam || "",
+                "domainVerification": domParam || "",
+                "eventTracking": []
+            });
+        } else {
+            const firstConfig = CONFIG_PAGES[0];
+            if (nameParam) firstConfig.name = nameParam;
+            if (pixelParam) firstConfig.pixelId = pixelParam;
+            if (domParam) firstConfig.domainVerification = domParam;
+        }
+        
+        console.log('URL Parameters applied:', { nameParam, pixelParam, domParam });
     }
 }
 
 
 /**
- * INJECTOR FUNCTION: Finds config based on URL params or body tag
- * Priority: URL params > body data-config-key > default
+ * INJECTOR FUNCTION: Finds config based on data-config-key in body tag and injects Meta/FB Pixel.
  */
-async function injectMetaTags() {
-    // 1. รอให้ config โหลดจาก GitHub
-    const loaded = await loadConfigFromGitHub();
-    if (!loaded) {
-        console.error('Meta Config: Cannot load configuration from GitHub');
-        return;
-    }
-
-    // 2. ดึง Config Key จาก URL params หรือ body tag
-    const params = new URLSearchParams(window.location.search);
-    let bodyConfigName = params.get('key') || document.body.getAttribute('data-config-key');
+function injectMetaTags() {
+    // 1. ตรวจสอบ Key ของหน้าเว็บไซต์ปัจจุบันจาก body tag
+    const bodyConfigName = document.body.getAttribute('data-config-key');
     
     if (!bodyConfigName) {
-        console.warn('Meta Config: No "key" parameter or "data-config-key" attribute found. Cannot inject specific Pixel/Domain.');
+        console.warn('Meta Config: Body attribute "data-config-key" not found. Cannot inject specific Pixel/Domain.');
         return;
     }
 
-    // 3. ค้นหา Config ที่ถูกต้องจาก Array
+    // 2. ค้นหา Config ที่ถูกต้องจาก Array
     const pageConfig = CONFIG_PAGES.find(config => config.key === bodyConfigName);
     
     if (!pageConfig || !pageConfig.pixelId || !pageConfig.domainVerification) {
@@ -123,5 +151,5 @@ function attachEvents(eventTrackingConfig) {
 }
 
 
-// Automatically call the injection function when the script loads
-injectMetaTags();
+// Automatically load config and call the injection function when the script loads
+document.addEventListener('DOMContentLoaded', loadConfig);
