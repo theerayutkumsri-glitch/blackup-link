@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta Pixel Config Test - www.test.com</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        h1 { color: #333; margin-bottom: 10px; }
+        .subtitle { color: #666; margin-bottom: 30px; font-size: 14px; }
+        
+        .config-info {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .config-info h3 { color: #667eea; margin-bottom: 10px; }
+        .config-info p { margin: 8px 0; color: #555; }
+        .label { font-weight: bold; color: #333; }
+        .value { color: #667eea; word-break: break-all; }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover { background: #5568d3; transform: translateY(-2px); }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        .btn-secondary:hover { background: #e0e0e0; }
+        
+        .url-section {
+            background: #fffbea;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .url-section h3 { color: #ff9800; margin-bottom: 15px; font-size: 16px; }
+        .url-example {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            font-size: 13px;
+        }
+        .url-example a {
+            color: #667eea;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .url-example a:hover { text-decoration: underline; }
+        
+        .console-log {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #333;
+        }
+        .console-log .log-line { margin: 4px 0; line-height: 1.4; }
+        .log-success { color: #4ec9b0; }
+        .log-error { color: #f48771; }
+        .log-info { color: #9cdcfe; }
+        
+        .status {
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .status-loading { background: #fff3cd; color: #856404; }
+        .status-success { background: #d4edda; color: #155724; }
+        .status-error { background: #f8d7da; color: #721c24; }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        
+        .instruction-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 30px;
+            border-left: 4px solid #1976d2;
+        }
+        .instruction-box h3 { color: #1976d2; margin-bottom: 10px; }
+        .instruction-box ol { margin-left: 20px; color: #555; line-height: 1.8; }
+        .instruction-box li { margin: 8px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Meta Pixel Config Test</h1>
+        <p class="subtitle">ทดสอบการโหลด Config จาก GitHub - URL: www.test.com?key=page1</p>
+        
+        <div id="status" class="status status-loading">⏳ กำลังโหลด Config...</div>
+        
+        <!-- Current Config Info -->
+        <div id="configContainer" style="display:none;">
+            <div class="config-info">
+                <h3>✅ Config ปัจจุบัน:</h3>
+                <p><span class="label">📌 Page Key:</span> <span class="value" id="currentKey">-</span></p>
+                <p><span class="label">📝 Page Name:</span> <span class="value" id="currentName">-</span></p>
+                <p><span class="label">🔷 Pixel ID:</span> <code id="currentPixel">-</code></p>
+                <p><span class="label">✔️ Domain Verification:</span> <code id="currentDom" style="font-size: 11px;">-</code></p>
+            </div>
+        </div>
+        
+        <!-- URL Examples -->
+        <div class="url-section">
+            <h3>📍 URL Examples - ลองคลิก:</h3>
+            <p style="margin-bottom: 10px; font-size: 12px; color: #666;">
+                (กดลิงก์ด้านล่างเพื่อเปลี่ยน key และดูการเปลี่ยนแปลง)
+            </p>
+            <div class="url-example">
+                🌐 <a href="?key=page1" target="_blank">https://www.test.com?key=page1</a>
+                <span style="color: #999; margin-left: 10px;">(เว็บหลัก)</span>
+            </div>
+            <div class="url-example">
+                🌐 <a href="?key=page2" target="_blank">https://www.test.com?key=page2</a>
+                <span style="color: #999; margin-left: 10px;">(แคมเปญโปรโมชั่น)</span>
+            </div>
+        </div>
+        
+        <!-- Test Buttons -->
+        <div style="margin: 30px 0;">
+            <h3 style="margin-bottom: 15px;">🎯 ทดสอบ Event Tracking:</h3>
+            <div class="button-group">
+                <button class="btn-primary" onclick="testTrackEvent('Contact', {})">
+                    📲 Track: Contact
+                </button>
+                <button class="btn-primary" onclick="testTrackEvent('AddToCart', {value: 100, currency: 'THB'})">
+                    🛒 Track: AddToCart (100 THB)
+                </button>
+                <button class="btn-secondary" onclick="showConsoleInfo()">
+                    🔍 ดู Console (F12)
+                </button>
+            </div>
+        </div>
+        
+        <!-- Available Pages -->
+        <div class="config-info">
+            <h3>📄 Pages ที่มีอยู่ใน config.json:</h3>
+            <div id="pagesList"></div>
+        </div>
+        
+        <!-- Console Logs -->
+        <div style="margin: 20px 0;">
+            <h3 style="margin-bottom: 10px; font-size: 15px;">📝 Debug Console:</h3>
+            <div id="consoleLogs" class="console-log">
+                <div class="log-line log-info">// Console logs will appear here...</div>
+            </div>
+        </div>
+        
+        <!-- Instructions -->
+        <div class="instruction-box">
+            <h3>📚 วิธีการใช้งาน:</h3>
+            <ol>
+                <li><strong>แก้ไข USERNAME:</strong> เปิด <code>meta-config.js</code> และแก้ <code>YOUR_USERNAME</code> ให้เป็น GitHub username ของคุณ</li>
+                <li><strong>Push ไป GitHub:</strong> Push ไฟล์ <code>config.json</code> ขึ้น GitHub</li>
+                <li><strong>ใช้ URL parameter:</strong> เรียกใช้ <code>?key=page1</code> หรือ <code>?key=page2</code></li>
+                <li><strong>ตรวจสอบ Console:</strong> เปิด Developer Console (F12) ดู Network/Console tab</li>
+                <li><strong>ทดสอบ Event:</strong> ลองคลิกปุ่ม "Track Event" เพื่อตรวจสอบว่า fbq() ถูก inject</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Load Meta Config Script -->
+    <script src="meta-config.js"></script>
+    
+    <!-- Test Functions -->
+    <script>
+        // ================== Console Logging ==================
+        const logContainer = document.getElementById('consoleLogs');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function addLog(message, type = 'info') {
+            const line = document.createElement('div');
+            line.className = `log-line log-${type}`;
+            const timestamp = new Date().toLocaleTimeString('th-TH');
+            line.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(line);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog(...args);
+            addLog(args.join(' '), 'success');
+        };
+        
+        console.error = function(...args) {
+            originalError(...args);
+            addLog(args.join(' '), 'error');
+        };
+        
+        console.warn = function(...args) {
+            originalWarn(...args);
+            addLog(args.join(' '), 'info');
+        };
+        
+        // ================== Display Config ==================
+        function displayCurrentConfig() {
+            const params = new URLSearchParams(window.location.search);
+            const pageKey = params.get('key') || 'ไม่ระบุ';
+            
+            if (typeof CONFIG_PAGES !== 'undefined' && CONFIG_PAGES.length > 0) {
+                const pageConfig = CONFIG_PAGES.find(p => p.key === pageKey);
+                if (pageConfig) {
+                    document.getElementById('currentKey').textContent = pageConfig.key;
+                    document.getElementById('currentName').textContent = pageConfig.name;
+                    document.getElementById('currentPixel').textContent = pageConfig.pixelId;
+                    document.getElementById('currentDom').textContent = pageConfig.domainVerification;
+                    document.getElementById('configContainer').style.display = 'block';
+                    
+                    const statusDiv = document.getElementById('status');
+                    statusDiv.className = 'status status-success';
+                    statusDiv.innerHTML = `✅ Config โหลดสำเร็จ (Key: <strong>${pageKey}</strong>)`;
+                    
+                    displayAvailablePages();
+                    return true;
+                }
+            }
+            
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = 'status status-error';
+            statusDiv.innerHTML = `❌ ไม่พบ Config สำหรับ key: <strong>${pageKey}</strong>`;
+            return false;
+        }
+        
+        function displayAvailablePages() {
+            if (typeof CONFIG_PAGES !== 'undefined' && CONFIG_PAGES.length > 0) {
+                const pagesList = document.getElementById('pagesList');
+                const html = CONFIG_PAGES.map((page, idx) => 
+                    `<p style="margin: 8px 0; padding: 8px; background: #fafafa; border-radius: 3px;">
+                        <strong style="color: #667eea;">${idx + 1}.</strong> 
+                        <code style="background: white; padding: 3px 8px; border: 1px solid #ddd;">${page.key}</code> 
+                        <span style="color: #666;">→ ${page.name}</span>
+                    </p>`
+                ).join('');
+                pagesList.innerHTML = html || '<p style="color: #999;">ไม่พบ pages</p>';
+            } else {
+                document.getElementById('pagesList').innerHTML = '<p style="color: #999;">กำลังโหลด...</p>';
+            }
+        }
+        
+        // ================== Event Tracking ==================
+        function testTrackEvent(eventName, params) {
+            if (typeof fbq === 'undefined') {
+                alert('❌ FBQ ยังไม่ได้ inject\n\n✓ ตรวจสอบ:\n1. Browser Console (F12)\n2. Meta Pixel ถูก inject หรือไม่\n3. GitHub URL ถูกต้องหรือไม่');
+                return;
+            }
+            
+            fbq('track', eventName, params);
+            console.log(`✓ FB Event Tracked: ${eventName}`, params);
+            alert(`✓ Event: ${eventName}\n✓ Params: ${JSON.stringify(params)}\n\n📝 ดู Console ด้านล่างเพื่อยืนยัน`);
+        }
+        
+        function showConsoleInfo() {
+            alert('เปิด Browser Console:\n\n🪟 Windows: Ctrl+Shift+J\n🍎 Mac: Cmd+Option+J\n\nจากนั้นดู Network tab เพื่อหา config.json');
+        }
+        
+        // ================== Initialization ==================
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                addLog('🎯 Page initialized', 'info');
+                displayCurrentConfig();
+            }, 1000);
+        });
+        
+        addLog('📄 Page loading...', 'info');
+    </script>
+</body>
+</html>

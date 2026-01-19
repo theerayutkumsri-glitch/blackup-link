@@ -1,0 +1,26 @@
+{
+  "pages": [
+    {
+      "key": "page1",
+      "name": "เว็บหลัก",
+      "pixelId": "906803681684641",
+      "domainVerification": "y0w3wdlfmswcvmvjb4ts060brtloyq",
+      "eventTracking": [
+        {
+          "id": "main-line-button",
+          "events": [
+            {"name": "Contact"},
+            {"name": "AddToCart", "params": {"value": 100, "currency": "THB"}}
+          ]
+        }
+      ]
+    },
+    {
+      "key": "page2",
+      "name": "แคมเปญโปรโมชั่น 1",
+      "pixelId": "123456789012345",
+      "domainVerification": "abcde12345fghij67890klmno2345",
+      "eventTracking": []
+    }
+  ]
+}
