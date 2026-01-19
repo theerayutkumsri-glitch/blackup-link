@@ -12,7 +12,9 @@ let CONFIG_PAGES = [];
 // Load config from GitHub
 async function loadConfigFromGitHub() {
     try {
-        const response = await fetch(CONFIG_URL);
+        // เพิ่ม cache buster เพื่อลบ cache
+        const url = CONFIG_URL + '?t=' + new Date().getTime();
+        const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         CONFIG_PAGES = data.pages || [];
