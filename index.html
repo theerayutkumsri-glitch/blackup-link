@@ -146,7 +146,7 @@
                 const encodedContent = btoa(unescape(encodeURIComponent(configJson)));
                 
                 // 2. ดึง SHA ของไฟล์เดิม (เพื่อ update)
-                const getFileUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${GITHUB_CONFIG_FILE}`;
+                const getFileUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${GITHUB_CONFIG_FILE}?ref=main`;
                 const getResponse = await fetch(getFileUrl, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -191,6 +191,7 @@
                 
                 if (!updateResponse.ok) {
                     const errorData = await updateResponse.json();
+                    console.error('GitHub PUT Error Response:', errorData);
                     throw new Error(errorData.message || `Failed to update file: ${updateResponse.status}`);
                 }
                 
