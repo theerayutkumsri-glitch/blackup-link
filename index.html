@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Meta Pixel/Domain Config Admin (Super AI Edition)</title>
+    <title>Meta Pixel/Domain Config Admin (Multi-Target Edition)</title>
     <style>
-        /* ... (ใช้ Style เดิมของคุณได้เลย แต่ผมย่อไว้เพื่อความกระชับ) ... */
         body { font-family: Arial, sans-serif; padding: 20px; max-width: 1300px; margin: auto; background-color: #f4f4f4; color: #333; }
         #login-container { text-align: center; margin-top: 100px; padding: 30px; border: 1px solid #ccc; background-color: white; max-width: 400px; margin: 100px auto 0; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         #login-container input { padding: 10px; margin: 10px 0; width: 80%; border: 1px solid #ddd; border-radius: 4px; }
@@ -32,26 +31,23 @@
     </div>
 
     <div id="admin-content" class="hidden">
-        <h2>💻 จัดการ Meta Pixel และ Domain Verification (Super Mode)</h2>
+        <h2>💻 จัดการ Meta Pixel และ Domain Verification (Multi-Web)</h2>
         
         <div style="background-color: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
             <strong>⚙️ ตั้งค่าการเชื่อมต่อ GitHub:</strong>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
                 <div>
                     <label>GitHub Token:</label>
-                    <div style="display:flex; gap:8px; align-items:center;">
-                        <input type="password" id="github-token-input" placeholder="ghp_xxxxxxxxxxxx" style="flex:1; padding: 8px;">
-                        <button onclick="clearToken()" style="padding:6px 10px; background:#dc3545; color:#fff; border:none; border-radius:4px; cursor:pointer;">ลบ Token</button>
-                    </div>
+                    <input type="password" id="github-token-input" placeholder="ghp_xxxxxxxxxxxx" style="width: 100%; padding: 8px;">
                 </div>
                 <div>
-                    <label>ชื่อ Repo ของเว็บแสดงผล (Target Repo):</label>
-                    <input type="text" id="target-repo-input" value="linkme-suzurun" placeholder="เช่น linkme-suzurun" style="width: 100%; padding: 8px;">
+                    <label>ชื่อ Repo ปลายทาง (Target Repos):</label>
+                    <textarea id="target-repo-input" placeholder="linkme-suzurun, linkme-web2, linkme-web3" style="width: 100%; padding: 8px; height: 38px; resize: none;"></textarea>
+                    <small style="color: #666; display:block; margin-top:4px;">
+                        * ใส่ได้หลายชื่อ โดยคั่นด้วยเครื่องหมายลูกน้ำ (,)
+                    </small>
                 </div>
             </div>
-            <small style="color: #666;">
-                📌 Token ต้องมีสิทธิ์ (Permission) เข้าถึงทั้ง 2 Repositories
-            </small>
         </div>
 
         <table class="config-table">
@@ -73,7 +69,7 @@
         // --- ส่วนตั้งค่าหลัก ---
         const MASTER_PASSWORD = "wooddy@8852"; 
         const GITHUB_USERNAME = "theerayutkumsri-glitch";
-        const GITHUB_ADMIN_REPO = "blackup-link"; // Repo ของ Admin
+        const GITHUB_ADMIN_REPO = "blackup-link"; 
         const GITHUB_CONFIG_FILE = "config.json";
 
         // --- ระบบล็อกอิน ---
@@ -89,29 +85,9 @@
             }
         }
 
-        // --- โหลด/บันทึก GitHub Token และ Target Repo ---
-        async function loadSettings() {
+        function loadSettings() {
             const token = localStorage.getItem('githubToken');
             const targetRepo = localStorage.getItem('targetRepo');
-
-            // If not present in localStorage, try to read defaults from local config.json
-            if (!token || !targetRepo) {
-                try {
-                    const res = await fetch('config.json?v=' + new Date().getTime());
-                    if (res.ok) {
-                        const cfg = await res.json();
-                        if (!token && cfg.github_token) {
-                            document.getElementById('github-token-input').value = cfg.github_token;
-                        }
-                        if (!targetRepo && cfg.target_repo) {
-                            document.getElementById('target-repo-input').value = cfg.target_repo;
-                        }
-                    }
-                } catch (e) {
-                    // ignore fetch errors; fall back to whatever we have
-                }
-            }
-
             if (token) document.getElementById('github-token-input').value = token;
             if (targetRepo) document.getElementById('target-repo-input').value = targetRepo;
         }
@@ -119,13 +95,7 @@
         document.getElementById('github-token-input').addEventListener('change', (e) => localStorage.setItem('githubToken', e.target.value));
         document.getElementById('target-repo-input').addEventListener('change', (e) => localStorage.setItem('targetRepo', e.target.value));
 
-        // Helper to clear token from localStorage/UI
-        function clearToken() {
-            localStorage.removeItem('githubToken');
-            document.getElementById('github-token-input').value = '';
-        }
-
-        // --- ข้อมูล Config Template ---
+        // --- Config Template ---
         const PAGE_CONFIGS_TEMPLATE = Array.from({length: 20}, (_, i) => ({ id: `FACEBOOK ${i+1}`, name: `Name ${i+1}` }));
         const LOCAL_STORAGE_KEY = 'metaConfig20';
 
@@ -152,28 +122,31 @@
                     <td><input type="text" id="domain_${config.key}" value="${config.domainVerification}" placeholder="Domain ID"></td>
                     <td><textarea id="event_${config.key}" rows="4">${config.eventTracking.length > 0 ? JSON.stringify(config.eventTracking, null, 4) : ''}</textarea></td>
                     <td class="action-cell">
-                        <button class="save-button" onclick="handleSave('${config.key}')">บันทึก & อัปเดตเว็บ</button>
+                        <button class="save-button" onclick="handleSave('${config.key}')">บันทึกทั้งหมด</button>
                         <div id="status_${config.key}" class="status-message"></div>
                     </td>
                 `;
             });
         }
 
-        // 🔥 ฟังก์ชันพระเอก: บันทึกและสั่งแก้โค้ดข้าม Repo 🔥
+        // 🔥 ฟังก์ชัน Multi-Target Save 🔥
         async function handleSave(key) {
             const statusDiv = document.getElementById(`status_${key}`);
-            const targetRepo = document.getElementById('target-repo-input').value.trim();
             const token = document.getElementById('github-token-input').value.trim();
+            const targetRepoString = document.getElementById('target-repo-input').value.trim();
 
-            if (!token || !targetRepo) {
-                alert('❌ กรุณาระบุ GitHub Token และชื่อ Target Repo ก่อน');
+            if (!token || !targetRepoString) {
+                alert('❌ กรุณาระบุ GitHub Token และชื่อ Target Repo อย่างน้อย 1 ชื่อ');
                 return;
             }
 
-            statusDiv.textContent = '⏳ กำลังประมวลผล...';
+            // แยกรายชื่อ Repo ด้วยเครื่องหมาย , และตัดช่องว่างออก
+            const targetRepos = targetRepoString.split(',').map(repo => repo.trim()).filter(repo => repo.length > 0);
+
+            statusDiv.textContent = '⏳ เริ่มกระบวนการ...';
             statusDiv.style.color = 'orange';
 
-            // 1. เก็บข้อมูลลง LocalStorage
+            // 1. Save Local & Config.json
             const allConfigs = loadAllConfigs();
             const newName = document.getElementById(`name_${key}`).value.trim();
             const newPixel = document.getElementById(`pixel_${key}`).value.trim();
@@ -182,109 +155,104 @@
             try {
                 const eventVal = document.getElementById(`event_${key}`).value.trim();
                 if(eventVal) newEvent = JSON.parse(eventVal);
-            } catch(e) {
-                statusDiv.textContent = '❌ JSON Event ผิดพลาด'; return;
-            }
+            } catch(e) { statusDiv.textContent = '❌ JSON Event ผิดพลาด'; return; }
 
-            // อัปเดต Array
             const index = allConfigs.findIndex(c => c.key === key);
-            if(index !== -1) {
-                allConfigs[index] = { key, name: newName, pixelId: newPixel, domainVerification: newDomain, eventTracking: newEvent };
-            }
+            if(index !== -1) allConfigs[index] = { key, name: newName, pixelId: newPixel, domainVerification: newDomain, eventTracking: newEvent };
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(allConfigs));
 
             try {
-                // 2. อัปเดตไฟล์ config.json (สำหรับ Pixel)
+                // อัปเดต Pixel Config (ที่เดียวจบ)
                 await updateFileInGithub(GITHUB_ADMIN_REPO, GITHUB_CONFIG_FILE, JSON.stringify({ CONFIG_PAGES: allConfigs }, null, 2), token);
                 
-                // 3. 🔥 ไฮไลท์: แก้ไขไฟล์ index.html ของเว็บปลายทาง (สำหรับ Domain Verification) 🔥
-                if (newDomain) {
-                    statusDiv.textContent = '🔄 กำลังแก้โค้ดหน้าเว็บ...';
-                    await injectDomainToTargetHtml(targetRepo, newDomain, token);
-                }
+                // 2. 🔥 วนลูปอัปเดต Domain Verification ให้ครบทุกเว็บ 🔥
+                if (newDomain && targetRepos.length > 0) {
+                    let successCount = 0;
+                    let failList = [];
 
-                statusDiv.textContent = '✅ สำเร็จ! รอ Vercel อัปเดต 2 นาที';
-                statusDiv.style.color = 'green';
-                alert(`✅ บันทึกสำเร็จ!\n\n1. Pixel ID: อัปเดตทันที\n2. Domain ID: ระบบแก้โค้ดใน index.html ให้แล้ว\n\n⚠️ กรุณารอประมาณ 2-3 นาที ให้ Vercel สร้างเว็บใหม่ ก่อนกด Verify ใน Facebook`);
+                    for (let i = 0; i < targetRepos.length; i++) {
+                        const repo = targetRepos[i];
+                        statusDiv.textContent = `🔄 กำลังแก้เว็บ ${i+1}/${targetRepos.length}: ${repo}...`;
+                        
+                        try {
+                            await injectDomainToTargetHtml(repo, newDomain, token);
+                            successCount++;
+                            console.log(`✅ ${repo} สำเร็จ`);
+                        } catch (err) {
+                            console.error(`❌ ${repo} ล้มเหลว:`, err);
+                            failList.push(repo);
+                        }
+                    }
+
+                    if (failList.length === 0) {
+                        statusDiv.textContent = `✅ แก้ครบ ${successCount} เว็บ!`;
+                        statusDiv.style.color = 'green';
+                        alert(`✅ บันทึกสำเร็จทุกเว็บ!\n\nอัปเดตเว็บ: ${targetRepos.join(', ')}\n\n⚠️ รอ Vercel 2-3 นาที แล้วกด Verify ใน Facebook ได้เลย`);
+                    } else {
+                        statusDiv.textContent = `⚠️ สำเร็จ ${successCount}, พัง ${failList.length}`;
+                        statusDiv.style.color = '#d9534f';
+                        alert(`⚠️ บางเว็บอัปเดตไม่ได้:\n❌ ล้มเหลว: ${failList.join(', ')}\n\n(เช็คชื่อ Repo หรือ Token อีกที)`);
+                    }
+
+                } else {
+                    statusDiv.textContent = '✅ บันทึก Config แล้ว';
+                    statusDiv.style.color = 'green';
+                }
 
             } catch (error) {
                 console.error(error);
-                statusDiv.textContent = `❌ เกิดข้อผิดพลาด: ${error.message}`;
+                statusDiv.textContent = `❌ Error: ${error.message}`;
                 statusDiv.style.color = 'red';
             }
         }
 
-        // ฟังก์ชันอัปเดตไฟล์ทั่วไป
         async function updateFileInGithub(repo, filename, content, token) {
             const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${repo}/contents/${filename}`;
-            // Get SHA
             const getRes = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
             let sha = null;
-            if (getRes.ok) {
-                const data = await getRes.json();
-                sha = data.sha;
-            }
-            // Put
+            if (getRes.ok) { const data = await getRes.json(); sha = data.sha; }
             const putRes = await fetch(url, {
                 method: 'PUT',
-                headers: { 
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: 'Admin Auto-Update',
-                    content: btoa(unescape(encodeURIComponent(content))),
-                    sha: sha,
-                    branch: 'main'
-                })
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: 'Admin Auto-Update', content: btoa(unescape(encodeURIComponent(content))), sha: sha, branch: 'main' })
             });
-            if (!putRes.ok) throw new Error('GitHub Update Failed');
+            if (!putRes.ok) throw new Error(`Github Update Failed (${repo})`);
         }
 
-        // 🔥 ฟังก์ชันเจาะจงสำหรับแก้ Meta Tag ในไฟล์ HTML 🔥
         async function injectDomainToTargetHtml(repo, newDomainId, token) {
             const filename = 'index.html';
             const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${repo}/contents/${filename}`;
             
-            // 1. ดึงไฟล์ HTML เดิมมาอ่าน
             const getRes = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
-            if (!getRes.ok) throw new Error(`หาไฟล์ index.html ใน Repo ${repo} ไม่เจอ`);
+            if (!getRes.ok) throw new Error(`ไม่พบไฟล์ใน ${repo}`);
             
             const data = await getRes.json();
-            const oldContent = decodeURIComponent(escape(atob(data.content))); // Decode Base64
+            const oldContent = decodeURIComponent(escape(atob(data.content))); 
             
-            // 2. ใช้ Regex ค้นหาและแทนที่ Meta Tag
-            // รูปแบบที่หา: <meta name="facebook-domain-verification" content="..." />
             const regex = /<meta\s+name=["']facebook-domain-verification["']\s+content=["'][^"']*["']\s*\/?>/i;
             const newTag = `<meta name="facebook-domain-verification" content="${newDomainId}" />`;
             
             let newContent;
             if (regex.test(oldContent)) {
-                // ถ้ามีของเดิม ให้แทนที่
                 newContent = oldContent.replace(regex, newTag);
             } else {
-                // ถ้าไม่มี ให้แทรกเข้าไปใน <head>
                 newContent = oldContent.replace('</head>', `    ${newTag}\n</head>`);
             }
 
-            if (newContent === oldContent) return; // ถ้าเหมือนเดิมไม่ต้องเซฟ
+            if (newContent === oldContent) return;
 
-            // 3. บันทึกไฟล์กลับไป
             const putRes = await fetch(url, {
                 method: 'PUT',
-                headers: { 
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    message: `Admin Auto-Inject Domain Verification: ${newDomainId}`,
+                    message: `Admin Inject Domain: ${newDomainId}`,
                     content: btoa(unescape(encodeURIComponent(newContent))),
                     sha: data.sha,
                     branch: 'main'
                 })
             });
             
-            if (!putRes.ok) throw new Error('Failed to inject HTML');
+            if (!putRes.ok) throw new Error(`บันทึกไฟล์ไม่ผ่าน (${repo})`);
         }
     </script>
 </body>
