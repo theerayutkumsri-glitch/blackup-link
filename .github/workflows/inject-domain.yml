@@ -1,0 +1,67 @@
+name: Inject Domain Verification
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_repo:
+        description: 'Target repo name (repo under the same owner)'
+        required: true
+        default: 'linkme-suzurun'
+      domain_id:
+        description: 'Facebook domain verification id to inject'
+        required: true
+
+jobs:
+  inject:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install deps
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq
+
+      - name: Inject domain meta tag into target index.html
+        env:
+          DEPLOY_PAT: ${{ secrets.DEPLOY_PAT }}
+        run: |
+          set -euo pipefail
+          owner="${{ github.repository_owner }}"
+          target="${{ github.event.inputs.target_repo }}"
+          domain="${{ github.event.inputs.domain_id }}"
+          api="https://api.github.com/repos/$owner/$target/contents/index.html"
+
+          echo "Fetching index.html from $owner/$target..."
+          resp=$(curl -s -H "Authorization: token $DEPLOY_PAT" "$api")
+
+          sha=$(echo "$resp" | jq -r .sha)
+          if [ "$sha" = "null" ] || [ -z "$sha" ]; then
+            echo "Failed to fetch index.html or file missing in target repo." >&2
+            echo "$resp" | jq -C .
+            exit 1
+          fi
+
+          content_b64=$(echo "$resp" | jq -r .content)
+          content=$(echo "$content_b64" | base64 --decode)
+
+          # Prepare new tag
+          new_tag="<meta name=\"facebook-domain-verification\" content=\"$domain\" />"
+
+          # Regex check and replace/insert
+          if echo "$content" | grep -qi "facebook-domain-verification"; then
+            new_content=$(echo "$content" | perl -0777 -pe "s/<meta\\s+name=[\'\"]facebook-domain-verification[\'\"]\\s+content=[\'\"][^\'\"]*[\'\"]\\s*\\/?\s*>/$new_tag/i")
+          else
+            new_content=$(echo "$content" | perl -0777 -pe "s#</head>#    $new_tag\n</head>#i")
+          fi
+
+          if [ "$new_content" = "$content" ]; then
+            echo "No changes required for index.html"
+            exit 0
+          fi
+
+          new_b64=$(printf "%s" "$new_content" | base64 | tr -d '\n')
+
+          body=$(jq -n --arg msg "Action: Inject domain $domain" --arg cont "$new_b64" --arg sha "$sha" '{message:$msg,content:$cont,sha:$sha,branch:"main"}')
+
+          echo "Committing updated index.html to $owner/$target..."
+          put_res=$(curl -s -X PUT -H "Authorization: token $DEPLOY_PAT" -H "Content-Type: application/json" -d "$body" "$api")
+          echo "$put_res" | jq -C .

@@ -39,7 +39,10 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
                 <div>
                     <label>GitHub Token:</label>
-                    <input type="password" id="github-token-input" placeholder="ghp_xxxxxxxxxxxx" style="width: 100%; padding: 8px;">
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <input type="password" id="github-token-input" placeholder="ghp_xxxxxxxxxxxx" style="flex:1; padding: 8px;">
+                        <button onclick="clearToken()" style="padding:6px 10px; background:#dc3545; color:#fff; border:none; border-radius:4px; cursor:pointer;">ลบ Token</button>
+                    </div>
                 </div>
                 <div>
                     <label>ชื่อ Repo ของเว็บแสดงผล (Target Repo):</label>
@@ -87,15 +90,40 @@
         }
 
         // --- โหลด/บันทึก GitHub Token และ Target Repo ---
-        function loadSettings() {
+        async function loadSettings() {
             const token = localStorage.getItem('githubToken');
             const targetRepo = localStorage.getItem('targetRepo');
+
+            // If not present in localStorage, try to read defaults from local config.json
+            if (!token || !targetRepo) {
+                try {
+                    const res = await fetch('config.json?v=' + new Date().getTime());
+                    if (res.ok) {
+                        const cfg = await res.json();
+                        if (!token && cfg.github_token) {
+                            document.getElementById('github-token-input').value = cfg.github_token;
+                        }
+                        if (!targetRepo && cfg.target_repo) {
+                            document.getElementById('target-repo-input').value = cfg.target_repo;
+                        }
+                    }
+                } catch (e) {
+                    // ignore fetch errors; fall back to whatever we have
+                }
+            }
+
             if (token) document.getElementById('github-token-input').value = token;
             if (targetRepo) document.getElementById('target-repo-input').value = targetRepo;
         }
 
         document.getElementById('github-token-input').addEventListener('change', (e) => localStorage.setItem('githubToken', e.target.value));
         document.getElementById('target-repo-input').addEventListener('change', (e) => localStorage.setItem('targetRepo', e.target.value));
+
+        // Helper to clear token from localStorage/UI
+        function clearToken() {
+            localStorage.removeItem('githubToken');
+            document.getElementById('github-token-input').value = '';
+        }
 
         // --- ข้อมูล Config Template ---
         const PAGE_CONFIGS_TEMPLATE = Array.from({length: 20}, (_, i) => ({ id: `FACEBOOK ${i+1}`, name: `Name ${i+1}` }));

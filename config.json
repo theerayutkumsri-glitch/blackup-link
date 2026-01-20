@@ -1,4 +1,6 @@
 {
+  "github_token": "",
+  "target_repo": "linkme-suzurun",
   "CONFIG_PAGES": [
     {
       "key": "FACEBOOK 1",
